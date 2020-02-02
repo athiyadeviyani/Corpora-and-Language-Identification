@@ -90,16 +90,14 @@ def avg_type_length(corpus, list_of_files):
     # Get a list of all tokens in the corpus
     tokens = get_corpus_tokens(corpus, list_of_files)
 
-    # lower = [x.lower() for x in tokens]
-    # print(lower)
 
     # Construct a list that contains the token lengths for each DISTINCT token in the document
-    distinct_token_lengths = [len(token) for token in set(tokens)]
+    distinct_token_lengths = [len(w) for w in set(v.lower() for v in tokens)]
     
-    # print(sum(distinct_token_lengths) / len(distinct_token_lengths))
-
+    avg_token_length = float(sum(distinct_token_lengths)) / len(distinct_token_lengths)
+    
     # Return the average type length of the document
-    return sum(distinct_token_lengths) / len(distinct_token_lengths)
+    return avg_token_length
 
 # Question 2 [5 marks]
 def open_question_1():
@@ -189,13 +187,15 @@ def train_LM(corpus):
     :rtype: LgramModel
     :return: A padded letter bigram model based on nltk.model.NgramModel
     '''
-    raise NotImplementedError # remove when you finish defining this function
+    # raise NotImplementedError # remove when you finish defining this function
 
     # subset the corpus to only include all-alpha tokens
-    corpus_tokens= [x for x in corpus if x.isalpha()]
+    corpus_tokens = [x.lower() for x in corpus if x.isalpha()]
 
     # Return a smoothed padded bigram letter language model
-    return ...
+    lm = NgramModel(2, corpus_tokens)
+
+    return lm
 
 # Question 7 [15 marks]
 def tweet_ent(file_name,bigram_model):
@@ -210,12 +210,13 @@ def tweet_ent(file_name,bigram_model):
     :return: ordered list of average entropies and tweets
     '''
 
-    raise NotImplementedError # remove when you finish defining this function
+    # raise NotImplementedError # remove when you finish defining this function
 
     # Clean up the tweet corpus to remove all non-alpha 
     # # tokens and tweets with less than 5 (remaining) tokens
     list_of_tweets = xtwc.sents(file_name)
-    cleaned_list_of_tweets = ... 
+    clean_tweets = [tweet.lower() for tweet in list_of_tweets if tweet.isalpha()]
+    cleaned_list_of_tweets = [clean_tweet for cleen_tweet in clean_tweets if len(clean_tweet) >= 5]
 
     # Construct a list of tuples of the form: (entropy,tweet)
     #  for each tweet in the cleaned corpus, where entropy is the
