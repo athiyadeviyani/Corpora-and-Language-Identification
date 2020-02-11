@@ -190,10 +190,12 @@ def train_LM(corpus):
     # raise NotImplementedError # remove when you finish defining this function
 
     # subset the corpus to only include all-alpha tokens
-    corpus_tokens = [x.lower() for x in corpus if x.isalpha()]
+    corpus_tokens = [x.lower() for x in corpus.words() if x.isalpha()]
+    
 
     # Return a smoothed padded bigram letter language model
-    lm = NgramModel(2, corpus_tokens)
+    est = lambda fdist,bins: nltk.probability.LaplaceProbDist(fdist,bins+1)
+    lm = NgramModel(2, corpus_tokens, estimator=est, pad_left=True, pad_right=True)
 
     return lm
 
@@ -215,15 +217,32 @@ def tweet_ent(file_name,bigram_model):
     # Clean up the tweet corpus to remove all non-alpha 
     # # tokens and tweets with less than 5 (remaining) tokens
     list_of_tweets = xtwc.sents(file_name)
-    clean_tweets = [tweet.lower() for tweet in list_of_tweets if tweet.isalpha()]
-    cleaned_list_of_tweets = [clean_tweet for cleen_tweet in clean_tweets if len(clean_tweet) >= 5]
+
+    alpha_tweets = []
+
+    for tweet in list_of_tweets:
+        alpha_tweet = []
+        for word in tweet:
+            if word.isalpha():
+                alpha_tweet.append(word)
+        alpha_tweets.append(alpha_tweet)
+        
+    
+    cleaned_tweets = [alpha_tweet for alpha_tweet in alpha_tweets if len(alpha_tweet) >= 5]
 
     # Construct a list of tuples of the form: (entropy,tweet)
     #  for each tweet in the cleaned corpus, where entropy is the
     #  average word for the tweet, and return the list of
     #  (entropy,tweet) tuples sorted by entropy
 
-    return ...
+    entropy_tweet_tuples = []
+
+    for tweet in cleaned_tweets:
+        entropy = bigram_model.entropy(tweet, perItem=True)
+        entropy_tweet_tuples.append((entropy, tweet))
+
+    return entropy_tweet_tuples
+
 # Question 8 [10 marks]
 def open_question_3():
     '''Question: What differentiates the beginning and end of the list
@@ -237,11 +256,23 @@ def open_question_3():
 
 
 # Question 9 [15 marks]
+
+# Statistics helper functions
+def mean_fn(data):
+    return float(sum(data) / len(data))
+
+def variance(data):
+    mu = mean_fn(data)
+    return mean_fn([(x - mu) ** 2 for x in data])
+
+def stddev(data):
+    return (variance(data)) ** 0.5
+
 def tweet_filter(list_of_tweets_and_entropies):
     '''
     Compute entropy mean, standard deviation and using them,
     likely non-English tweets in the all-ascii subset of list 
-    of tweetsand their biletter entropies
+    of tweets and their biletter entropies
 
     :type list_of_tweets_and_entropies: list(tuple(float,list(str)))
     :param list_of_tweets_and_entropies: tweets and their
@@ -251,30 +282,39 @@ def tweet_filter(list_of_tweets_and_entropies):
              not-English tweets and entropies
     '''
 
-    raise NotImplementedError # remove when you finish defining this function
+    print(list_of_tweets_and_entropies)
+
+    # raise NotImplementedError # remove when you finish defining this function
 
     # Find the "ascii" tweets - those in the lowest-entropy 90%
     #  of list_of_tweets_and_entropies
-    list_of_ascii_tweets_and_entropies = ...
+    sorted_list_of_tweets_and_entropies = sorted(list_of_tweets_and_entropies)
+    ninety_per_cent = int(0.9 * len(sorted_list_of_tweets_and_entropies))
+    list_of_ascii_tweets_and_entropies = sorted_list_of_tweets_and_entropies[:ninety_per_cent]
+
+    # print(len(sorted_list_of_tweets_and_entropies))   OUT: 106811
+    # print(len(list_of_ascii_tweets_and_entropies))    OUT: 96129
 
     # Extract a list of just the entropy values
-    list_of_entropies = ...
+    list_of_entropies = [i[0] for i in list_of_ascii_tweets_and_entropies]
+
 
     # Compute the mean of entropy values for "ascii" tweets
-    mean = ...
+    mean = mean_fn(list_of_entropies)
 
     # Compute their standard deviation
-    standard_deviation = ...
+    standard_deviation = stddev(list_of_entropies)
 
     # Get a list of "probably not English" tweets, that is
     #  "ascii" tweets with an entropy greater than (mean + std_dev))
-    threshold = ...
-    list_of_not_English_tweets_and_entropies= ...
+    threshold = mean + standard_deviation
+
+    list_of_not_English_tweets_and_entropies= [tweet for tweet in list_of_ascii_tweets_and_entropies if tweet[0] > threshold]
 
     # Return mean, standard_deviation,
     #  list_of_ascii_tweets_and_entropies,
     #  list_of_not_English_tweets_and_entropies
-    return ...
+    return mean, standard_deviation, list_of_ascii_tweets_and_entropies, list_of_not_English_tweets_and_entropies
 
 # Utility function
 def ppEandT(eAndTs):
