@@ -282,17 +282,6 @@ def open_question_3():
 
 # Question 9 [15 marks]
 
-# Statistics helper functions
-def mean_fn(data):
-    return float(sum(data) / len(data))
-
-def variance(data):
-    mu = mean_fn(data)
-    return mean_fn([(x - mu) ** 2 for x in data])
-
-def stddev(data):
-    return (variance(data)) ** 0.5
-
 def tweet_filter(list_of_tweets_and_entropies):
     '''
     Compute entropy mean, standard deviation and using them,
@@ -325,10 +314,10 @@ def tweet_filter(list_of_tweets_and_entropies):
 
 
     # Compute the mean of entropy values for "ascii" tweets
-    mean = mean_fn(list_of_entropies)
+    mean = np.mean(list_of_entropies)
 
     # Compute their standard deviation
-    standard_deviation = stddev(list_of_entropies)
+    standard_deviation = np.std(list_of_entropies)
 
     # Get a list of "probably not English" tweets, that is
     #  "ascii" tweets with an entropy greater than (mean + std_dev))
