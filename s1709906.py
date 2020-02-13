@@ -108,7 +108,7 @@ def open_question_1():
     :return: your answer'''
 
     return inspect.cleandoc("""\
-        ...""")[0:500]
+        people dont really use punctuations properly on twitter""")[0:500]
 
 # Question 3 [10 marks]
 def plot_frequency(tokens, topK=50):
@@ -149,14 +149,14 @@ def clean_data(corpus_tokens):
     '''
     # raise NotImplementedError # remove when you finish defining this function
 
+    # A token is 'clean' if it's alphanumeric and NOT in the list of stopwords    
     stops = list(stopwords.words("english"))
 
-    # A token is 'clean' if it's alphanumeric and NOT in the list of stopwords
     cleaned = []
 
     for token in corpus_tokens:
-        if (token not in stops) and token.isalnum():
-            cleaned.append(token)
+        if token.isalnum() and (token.lower() not in stops):
+            cleaned.append(token.lower())
 
     # Return a cleaned list of corpus tokens
     return cleaned
@@ -170,7 +170,7 @@ def open_question_2():
     :return: your answer []
     '''
     return inspect.cleandoc("""\
-        ... """)[0:500]
+        because not formal and use slang """)[0:500]
 
 # ==============================================
 # Section B: Language Identification [45 marks]
@@ -190,12 +190,14 @@ def train_LM(corpus):
     # raise NotImplementedError # remove when you finish defining this function
 
     # subset the corpus to only include all-alpha tokens
-    corpus_tokens = [x.lower() for x in corpus.words() if x.isalpha()]
-    
+    corpus_tokens = []
+
+    for token in corpus.words():
+        if token.isalpha():
+            corpus_tokens.append(token.lower())
 
     # Return a smoothed padded bigram letter language model
-    est = lambda fdist,bins: nltk.probability.LaplaceProbDist(fdist,bins+1)
-    lm = NgramModel(2, corpus_tokens, estimator=est, pad_left=True, pad_right=True)
+    lm = LgramModel(n=2, train=corpus_tokens, pad_left=True, pad_right=True)
 
     return lm
 
@@ -224,10 +226,11 @@ def tweet_ent(file_name,bigram_model):
         alpha_tweet = []
         for word in tweet:
             if word.isalpha():
-                alpha_tweet.append(word)
+                alpha_tweet.append(word.lower())
         alpha_tweets.append(alpha_tweet)
         
-    
+    # print(alpha_tweets)
+
     cleaned_tweets = [alpha_tweet for alpha_tweet in alpha_tweets if len(alpha_tweet) >= 5]
 
     # Construct a list of tuples of the form: (entropy,tweet)
@@ -238,10 +241,11 @@ def tweet_ent(file_name,bigram_model):
     entropy_tweet_tuples = []
 
     for tweet in cleaned_tweets:
-        entropy = bigram_model.entropy(tweet, perItem=True)
+        entropies = [bigram_model.entropy(word, perItem=True, pad_left=True, pad_right=True) for word in tweet]
+        entropy = np.mean(entropies)
         entropy_tweet_tuples.append((entropy, tweet))
 
-    return entropy_tweet_tuples
+    return sorted(entropy_tweet_tuples)
 
 # Question 8 [10 marks]
 def open_question_3():
@@ -252,7 +256,7 @@ def open_question_3():
     :return: your answer [500 chars max]'''
 
     return inspect.cleandoc("""\
-    ...""")[0:500]
+    beginning of list = low entropy, more certainty """)[0:500]
 
 
 # Question 9 [15 marks]
