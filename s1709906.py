@@ -108,7 +108,11 @@ def open_question_1():
     :return: your answer'''
 
     return inspect.cleandoc("""\
-        people dont really use punctuations properly on twitter""")[0:500]
+    The average type length is greater for Twitter data because the language used by Twitter users is rather informal
+    and does not usually conform to proper English language rules which may include longer slang words. In addition to that, 
+    Twitter is used by users from all over the world who speak different languages which may have longer average word 
+    length than the English language.
+    """)[0:500]
 
 # Question 3 [10 marks]
 def plot_frequency(tokens, topK=50):
@@ -166,11 +170,21 @@ def open_question_2():
     '''
     Problem: noise in Twitter data
 
+    The Twitter data is still very noisy, despite having removed English stopwords and non-alphanumeric strings.
+    What else could be done to clean up the data so that it would be easier to work with?  
+    Complete function open_question_2 in which you need to describe in detail the problems that you have identified 
+    with the data and the techniques that you could use for the cleaning up process. Give examples where appropriate.
+
     :rtype: str
     :return: your answer []
+
     '''
     return inspect.cleandoc("""\
-        because not formal and use slang """)[0:500]
+        The Twitter data is still noisy because Twitter users do not usually conform to the formal English language 
+        spelling or rules. They can actually be using a different language given Twitter's worldwide use. Even if they 
+        are using English, it is common that people misspell the words or use slang/Twitterlingo such as using 'RT' for 
+        'retweet'. One way to clean this data further is to filter out words that do not belong in the formal English 
+        language dictionary.""")[0:500]
 
 # ==============================================
 # Section B: Language Identification [45 marks]
@@ -252,11 +266,18 @@ def open_question_3():
     '''Question: What differentiates the beginning and end of the list
        of tweets and their entropies?
 
+       Inspect the list of entropy-tweet pairs generated in question 7. 
+       What differentiates the beginning and end ofthe list of tweets and their entropies?
+
     :rtype: str
     :return: your answer [500 chars max]'''
 
     return inspect.cleandoc("""\
-    beginning of list = low entropy, more certainty """)[0:500]
+    The tweets at the beginning of the list has lower entropy than the ones at the end, which means
+    that they have higher certainty. The tweets at the beginning of the list contains correctly spelled
+    English words with a uniformly short average type length (about 3-5 characters/word) whilst the tweets 
+    at the end of the list contains words that do not belong in the English language. By examination, 
+    the tweets at the end of the list does not even contain any latin characters.""")[0:500]
 
 
 # Question 9 [15 marks]
